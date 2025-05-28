@@ -42,8 +42,7 @@ builder.Services.AddScoped<CoinMarketCapClient>();
 // ExchangeRatesApi
 builder.Services.AddHttpClient("ExchangeRates", client =>
 {
-    client.BaseAddress = new Uri("https://api.apilayer.com/exchangerates_data/");
-    client.DefaultRequestHeaders.Add("apikey", builder.Configuration["ExchangeRates:ApiKey"]);
+    client.BaseAddress = new Uri("https://api.exchangeratesapi.io/v1/");
 });
 builder.Services.AddScoped<ExchangeRatesClient>();
 

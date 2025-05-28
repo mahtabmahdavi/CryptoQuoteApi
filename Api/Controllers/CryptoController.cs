@@ -1,5 +1,4 @@
-﻿using CryptoQuoteApi.Application.Dtos;
-using CryptoQuoteApi.Infrastructure.Services;
+﻿using CryptoQuoteApi.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoQuoteApi.Api.Controllers;
@@ -8,9 +7,9 @@ namespace CryptoQuoteApi.Api.Controllers;
 [ApiController]
 public class CryptoController : ControllerBase
 {
-    private readonly CoinMarketCapClient _client;
+    private readonly ExchangeRatesClient _client;
 
-    public CryptoController(CoinMarketCapClient client)
+    public CryptoController(ExchangeRatesClient client)
     {
         _client = client;
     }
@@ -18,9 +17,9 @@ public class CryptoController : ControllerBase
     [HttpGet("{symbol}")]
     public async Task<IActionResult> GetPrice(string symbol)
     {
-        var price = await _client.GetPriceInUsdAsync(symbol);
+        var rates = await _client.GetRatesFromEurAsync();
 
-        if (price == null)
+        if (rates == null)
         {
             return NotFound(new
             {
@@ -28,15 +27,6 @@ public class CryptoController : ControllerBase
             });
         }
 
-        var response = new CryptoQuoteResponseDto
-        {
-            Symbol = symbol.ToUpper(),
-            Rates = new Dictionary<string, decimal>
-            {
-                { "USD", price.Value }
-            }
-        };
-
-        return Ok(response);
+        return Ok(rates);
     }
 }
