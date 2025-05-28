@@ -1,3 +1,4 @@
+using CryptoQuoteApi.Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,15 @@ builder.Services.AddCors(options =>
     });
 });
 
+// <-------------------- Register HttpClients -------------------->
+
+// CoinMarketCapClient
+builder.Services.AddHttpClient("CoinMarketCap", client =>
+{
+    client.BaseAddress = new Uri("https://pro-api.coinmarketcap.com/v1/");
+    client.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", builder.Configuration["CoinMarketCap:ApiKey"]);
+});
+builder.Services.AddScoped<CoinMarketCapClient>();
 
 // <-------------------- Build and Configure the App -------------------->
 
