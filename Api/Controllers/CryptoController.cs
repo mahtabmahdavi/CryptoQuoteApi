@@ -1,4 +1,5 @@
-﻿using CryptoQuoteApi.Infrastructure.Services;
+﻿using CryptoQuoteApi.Application.Dtos;
+using CryptoQuoteApi.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoQuoteApi.Api.Controllers;
@@ -17,6 +18,25 @@ public class CryptoController : ControllerBase
     [HttpGet("{symbol}")]
     public async Task<IActionResult> GetPrice(string symbol)
     {
-        return Ok();
+        var price = await _client.GetPriceInUsdAsync(symbol);
+
+        if (price == null)
+        {
+            return NotFound(new
+            {
+                Message = $"No data found for {symbol.ToUpper()}"
+            });
+        }
+
+        var response = new CryptoQuoteResponseDto
+        {
+            Symbol = symbol.ToUpper(),
+            Rates = new Dictionary<string, decimal>
+            {
+                { "USD", price.Value }
+            }
+        };
+
+        return Ok(response);
     }
 }
