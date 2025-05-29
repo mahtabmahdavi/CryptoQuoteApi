@@ -14,11 +14,11 @@ public class CoinMarketCapClient
         _logger = logger;
     }
 
-    public async Task<decimal?> GetPriceInUsdAsync(string symbol)
+    public async Task<decimal?> GetPriceInEurAsync(string symbol)
     {
         try
         {
-            var response = await _httpClient.GetAsync($"cryptocurrency/quotes/latest?symbol={symbol}&convert=USD");
+            var response = await _httpClient.GetAsync($"cryptocurrency/quotes/latest?symbol={symbol}&convert=EUR");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
@@ -27,7 +27,7 @@ public class CoinMarketCapClient
 
             if (result?.Data != null && result.Data.TryGetValue(symbol.ToUpper(), out var data))
             {
-                return data.Quote["USD"].Price;
+                return data.Quote["EUR"].Price;
             }
 
             return null;
