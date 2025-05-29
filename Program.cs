@@ -1,3 +1,4 @@
+using CryptoQuoteApi.Application.Interfaces;
 using CryptoQuoteApi.Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 
@@ -45,6 +46,8 @@ builder.Services.AddHttpClient("ExchangeRates", client =>
     client.BaseAddress = new Uri("https://api.exchangeratesapi.io/v1/");
 });
 builder.Services.AddScoped<ExchangeRatesClient>();
+
+builder.Services.AddScoped<ICryptoQuoteService, CryptoQuoteService>();
 
 // <-------------------- Build and Configure the App -------------------->
 

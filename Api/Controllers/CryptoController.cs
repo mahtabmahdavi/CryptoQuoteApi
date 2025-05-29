@@ -1,4 +1,5 @@
-﻿using CryptoQuoteApi.Infrastructure.Services;
+﻿using CryptoQuoteApi.Application.Interfaces;
+using CryptoQuoteApi.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CryptoQuoteApi.Api.Controllers;
@@ -7,19 +8,19 @@ namespace CryptoQuoteApi.Api.Controllers;
 [ApiController]
 public class CryptoController : ControllerBase
 {
-    private readonly ExchangeRatesClient _client;
+    private readonly ICryptoQuoteService _service;
 
-    public CryptoController(ExchangeRatesClient client)
+    public CryptoController(ICryptoQuoteService service)
     {
-        _client = client;
+        _service = service;
     }
 
     [HttpGet("{symbol}")]
     public async Task<IActionResult> GetPrice(string symbol)
     {
-        var rates = await _client.GetRatesFromEurAsync();
+        var response = await _service.GetCryptoQuoteAsync(symbol);
 
-        if (rates == null)
+        if (response == null)
         {
             return NotFound(new
             {
@@ -27,6 +28,6 @@ public class CryptoController : ControllerBase
             });
         }
 
-        return Ok(rates);
+        return Ok(response);
     }
 }
