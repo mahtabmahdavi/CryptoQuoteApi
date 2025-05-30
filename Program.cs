@@ -1,6 +1,11 @@
+using CryptoQuoteApi.Application.Dtos;
 using CryptoQuoteApi.Application.Interfaces;
+using CryptoQuoteApi.Application.Settings;
+using CryptoQuoteApi.Application.Validators;
 using CryptoQuoteApi.Infrastructure.Services;
+using FluentValidation;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,24 +35,25 @@ builder.Services.AddCors(options =>
     });
 });
 
-// <-------------------- Register HttpClients -------------------->
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/crypto-quote-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
-// CoinMarketCapClient
-builder.Services.AddHttpClient("CoinMarketCap", client =>
-{
-    client.BaseAddress = new Uri("https://pro-api.coinmarketcap.com/v1/");
-    client.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", builder.Configuration["CoinMarketCap:ApiKey"]);
-});
-builder.Services.AddScoped<CoinMarketCapService>();
+builder.Host.UseSerilog();
 
-// ExchangeRatesApi
-builder.Services.AddHttpClient("ExchangeRates", client =>
-{
-    client.BaseAddress = new Uri("https://api.exchangeratesapi.io/v1/");
-});
-builder.Services.AddScoped<ExchangeRatesService>();
+// Configure settings
+builder.Services.Configure<ExternalApiSettings>(
+    builder.Configuration.GetSection("ExternalApis"));
 
+// Configure services
+builder.Services.AddHttpClient<CoinMarketCapService>();
+builder.Services.AddHttpClient<ExchangeRatesService>();
 builder.Services.AddScoped<ICryptoQuoteService, CryptoQuoteService>();
+
+// Configure validation
+builder.Services.AddScoped<IValidator<CryptoQuoteRequest>, CryptoQuoteRequestValidator>();
 
 // <-------------------- Build and Configure the App -------------------->
 
