@@ -55,7 +55,8 @@ public class ErrorHandlingMiddleware
                     {
                         Code = apiException.ErrorCode,
                         Message = apiException.Message,
-                        Details = _env.IsDevelopment() ? exception.Message : null
+                        Details = _env.IsDevelopment() ? exception.Message : null,
+                        StackTrace = _env.IsDevelopment() ? exception.StackTrace : null
                     }
                 };
                 break;
@@ -72,7 +73,8 @@ public class ErrorHandlingMiddleware
                         {
                             Property = e.PropertyName,
                             Message = e.ErrorMessage
-                        })
+                        }),
+                        StackTrace = _env.IsDevelopment() ? exception.StackTrace : null
                     }
                 };
                 break;
