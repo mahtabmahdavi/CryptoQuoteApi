@@ -20,7 +20,7 @@ public class CryptoQuoteController : ControllerBase
     }
 
     [HttpGet("{symbol}")]
-    public async Task<ActionResult<CryptoQuoteResponse> GetQuote(string symbol)
+    public async Task<ActionResult<CryptoQuoteResponse>> GetQuote(string symbol)
     {
         try
         {
