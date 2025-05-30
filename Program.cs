@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using CryptoQuoteApi.Api.Middlewares;
 using CryptoQuoteApi.Application.Dtos;
 using CryptoQuoteApi.Application.Interfaces;
@@ -66,6 +67,15 @@ builder.Services.AddScoped<ICryptoQuoteService, CryptoQuoteService>();
 
 // Configure validation
 builder.Services.AddScoped<IValidator<CryptoQuoteRequest>, CryptoQuoteRequestValidator>();
+
+// Configure rate limiting
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.Configure<IpRateLimitPolicies>(builder.Configuration.GetSection("IpRateLimitPolicies"));
+builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+builder.Services.AddInMemoryRateLimiting();
 
 // <-------------------- Build and Configure the App -------------------->
 
