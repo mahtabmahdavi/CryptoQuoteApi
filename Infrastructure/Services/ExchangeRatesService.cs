@@ -1,4 +1,5 @@
-﻿using CryptoQuoteApi.Application.Settings;
+﻿using CryptoQuoteApi.Application.Exceptions;
+using CryptoQuoteApi.Application.Settings;
 using CryptoQuoteApi.Infrastructure.Models.ExchangeRates;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
@@ -25,26 +26,21 @@ public class ExchangeRatesService
 
     public async Task<Dictionary<string, decimal>> GetExchangeRatesFromEurAsync()
     {
-        try
+        var symbols = string.Join(",", TargetCurrencies);
+        var response = await _httpClient.GetAsync($"latest?access_key={_settings.ApiKey}&base=EUR&symbols={symbols}");
+        if (!response.IsSuccessStatusCode)
         {
-            var symbols = string.Join(",", TargetCurrencies);
-            var response = await _httpClient.GetAsync($"latest?access_key={_settings.ApiKey}&base=EUR&symbols={symbols}");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<ExchangeRatesResponse>(content);
-
-            if (result?.Rates is null)
-            {
-                throw new Exception("Failed to get exchange rates");
-            }
-
-            return result.Rates;
+            throw new ExternalApiException("ExchangeRates API call failed.");
         }
-        catch (Exception ex)
+
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<ExchangeRatesResponse>(content);
+
+        if (result?.Rates is null)
         {
-            _logger.LogError(ex, "Error getting exchange rates from ExchangeRates API");
-            throw;
+            throw new NotFoundException($"Failed to parse exchange rates.");
         }
+
+        return result.Rates;
     }
 }

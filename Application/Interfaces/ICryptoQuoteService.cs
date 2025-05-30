@@ -4,5 +4,5 @@ namespace CryptoQuoteApi.Application.Interfaces;
 
 public interface ICryptoQuoteService
 {
-    Task<CryptoQuoteResponse?> GetCryptoQuoteAsync(string symbol);
+    Task<CryptoQuoteResponse> GetCryptoQuoteAsync(CryptoQuoteRequest request);
 }

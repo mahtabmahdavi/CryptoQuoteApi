@@ -1,4 +1,5 @@
-﻿using CryptoQuoteApi.Application.Settings;
+﻿using CryptoQuoteApi.Application.Exceptions;
+using CryptoQuoteApi.Application.Settings;
 using CryptoQuoteApi.Infrastructure.Models.CoinMarketCap;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
@@ -28,25 +29,21 @@ public class CoinMarketCapService
 
     public async Task<decimal> GetCryptoPriceInEurAsync(string symbol)
     {
-        try
+        
+        var response = await _httpClient.GetAsync($"cryptocurrency/quotes/latest?symbol={symbol}&convert=EUR");
+        if (!response.IsSuccessStatusCode)
         {
-            var response = await _httpClient.GetAsync($"cryptocurrency/quotes/latest?symbol={symbol}&convert=EUR");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<CoinMarketCapResponse>(content);
-
-            if (result?.Data is null || !result.Data.ContainsKey(symbol.ToUpper()))
-            {
-                throw new Exception($"No data found for symbol: {symbol}");
-            }
-
-            return result.Data[symbol].Quote["EUR"].Price;
+            throw new ExternalApiException("CoinMarketCap API call failed.");
         }
-        catch (Exception ex)
+
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<CoinMarketCapResponse>(content);
+
+        if (result?.Data is null || !result.Data.ContainsKey(symbol.ToUpper()))
         {
-            _logger.LogError(ex, $"Error getting price from CoinMarketCap for symbol: {symbol}");
-            throw;
+            throw new NotFoundException($"No data found for symbol: {symbol}");
         }
+
+        return result.Data[symbol.ToUpper()].Quote["EUR"].Price;
     }
 }

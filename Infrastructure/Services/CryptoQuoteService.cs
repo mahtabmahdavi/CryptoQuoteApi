@@ -19,33 +19,18 @@ public class CryptoQuoteService : ICryptoQuoteService
         _logger = logger;
     }
 
-    public async Task<CryptoQuoteResponse> GetCryptoQuoteAsync(string symbol)
+    public async Task<CryptoQuoteResponse> GetCryptoQuoteAsync(CryptoQuoteRequest request)
     {
-        try
+        var eurPrice = await _coinService.GetCryptoPriceInEurAsync(request.Symbol);
+        var rates = await _exchangeClient.GetExchangeRatesFromEurAsync();
+        var convertedRates = rates.ToDictionary(
+            r => r.Key,
+            r => eurPrice * r.Value);
+
+        return new CryptoQuoteResponse
         {
-            var eurPrice = await _coinService.GetCryptoPriceInEurAsync(symbol);
-            var rates = await _exchangeClient.GetExchangeRatesFromEurAsync();
-            var convertedRates = rates.ToDictionary(
-                r => r.Key,
-                r => eurPrice * r.Value);
-
-            var response = new CryptoQuoteResponse
-            {
-                Symbol = symbol.ToUpper(),
-                Quotes = new Dictionary<string, decimal>()
-            };
-
-            foreach (var cr in convertedRates)
-            {
-                response.Quotes.TryAdd(cr.Key, cr.Value);
-            }
-
-            return response;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error getting crypto quote for symbol: {symbol}");
-            throw;
-        }
+            Symbol = request.Symbol.ToUpper(),
+            Quotes = convertedRates
+        };
     }
 }

@@ -1,3 +1,4 @@
+using CryptoQuoteApi.Api.Middlewares;
 using CryptoQuoteApi.Application.Dtos;
 using CryptoQuoteApi.Application.Interfaces;
 using CryptoQuoteApi.Application.Settings;
@@ -11,7 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // <-------------------- Register Application Services -------------------->
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 
 // Configure Swagger for API documentation
@@ -68,6 +74,8 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty;
     });
 }
+// Add error handling middleware
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
