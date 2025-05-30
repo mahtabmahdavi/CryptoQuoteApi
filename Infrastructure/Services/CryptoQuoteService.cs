@@ -5,41 +5,34 @@ namespace CryptoQuoteApi.Infrastructure.Services;
 
 public class CryptoQuoteService : ICryptoQuoteService
 {
-    private readonly CoinMarketCapClient _coinClient;
-    private readonly ExchangeRatesClient _exchangeClient;
+    private readonly CoinMarketCapService _coinService;
+    private readonly ExchangeRatesService _exchangeClient;
     private readonly ILogger<CryptoQuoteService> _logger;
 
-    public CryptoQuoteService(CoinMarketCapClient coinClient, ExchangeRatesClient exchangeClient, 
+    public CryptoQuoteService(
+        CoinMarketCapService coinService,
+        ExchangeRatesService exchangeClient, 
         ILogger<CryptoQuoteService> logger)
     {
-        _coinClient = coinClient;
+        _coinService = coinService;
         _exchangeClient = exchangeClient;
         _logger = logger;
     }
 
-    public async Task<CryptoQuoteResponse?> GetCryptoQuoteAsync(string symbol)
+    public async Task<CryptoQuoteResponse> GetCryptoQuoteAsync(string symbol)
     {
         try
         {
-            var priceInEur = await _coinClient.GetPriceInEurAsync(symbol);
-            if (priceInEur is null)
-            {
-                _logger.LogWarning($"Price was NOT found for symbol {symbol}");
-                return null;
-            }
-
-            var rates = await _exchangeClient.GetRatesFromEurAsync();
+            var eurPrice = await _coinService.GetCryptoPriceInEurAsync(symbol);
+            var rates = await _exchangeClient.GetExchangeRatesFromEurAsync();
             var convertedRates = rates.ToDictionary(
                 r => r.Key,
-                r => priceInEur.Value * r.Value);
+                r => eurPrice * r.Value);
 
             var response = new CryptoQuoteResponse
             {
                 Symbol = symbol.ToUpper(),
-                Quotes = new Dictionary<string, decimal>
-                {
-                    { "EUR", priceInEur.Value },
-                }
+                Quotes = new Dictionary<string, decimal>()
             };
 
             foreach (var cr in convertedRates)
@@ -51,9 +44,8 @@ public class CryptoQuoteService : ICryptoQuoteService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error getting crypto quote for symbol {symbol}");
-            return null;
+            _logger.LogError(ex, $"Error getting crypto quote for symbol: {symbol}");
+            throw;
         }
-        
     }
 }

@@ -38,14 +38,14 @@ builder.Services.AddHttpClient("CoinMarketCap", client =>
     client.BaseAddress = new Uri("https://pro-api.coinmarketcap.com/v1/");
     client.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", builder.Configuration["CoinMarketCap:ApiKey"]);
 });
-builder.Services.AddScoped<CoinMarketCapClient>();
+builder.Services.AddScoped<CoinMarketCapService>();
 
 // ExchangeRatesApi
 builder.Services.AddHttpClient("ExchangeRates", client =>
 {
     client.BaseAddress = new Uri("https://api.exchangeratesapi.io/v1/");
 });
-builder.Services.AddScoped<ExchangeRatesClient>();
+builder.Services.AddScoped<ExchangeRatesService>();
 
 builder.Services.AddScoped<ICryptoQuoteService, CryptoQuoteService>();
 
