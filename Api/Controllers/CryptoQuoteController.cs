@@ -23,7 +23,7 @@ public class CryptoQuoteController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
+    [HttpPost]
     public async Task<ActionResult<CryptoQuoteResponse>> GetQuote([FromBody] CryptoQuoteRequest request)
     {
         try
