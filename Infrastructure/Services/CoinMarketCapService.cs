@@ -11,16 +11,13 @@ public class CoinMarketCapService
 {
     private readonly HttpClient _httpClient;
     private readonly CoinMarketCapSettings _settings;
-    private readonly ILogger<CoinMarketCapService> _logger;
 
     public CoinMarketCapService(
         HttpClient httpClient,
-        IOptions<ExternalApiSettings> settings,
-        ILogger<CoinMarketCapService> logger)
+        IOptions<ExternalApiSettings> settings)
     {
         _httpClient = httpClient;
         _settings = settings.Value.CoinMarketCap;
-        _logger = logger;
 
         _httpClient.BaseAddress = new Uri(_settings.BaseUrl);
         _httpClient.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", _settings.ApiKey);
@@ -41,7 +38,7 @@ public class CoinMarketCapService
 
         if (result?.Data is null || !result.Data.ContainsKey(symbol.ToUpper()))
         {
-            throw new NotFoundException($"No data found for symbol: {symbol}");
+            throw new NotFoundException($"No data found for symbol: {symbol.ToUpper()}");
         }
 
         return result.Data[symbol.ToUpper()].Quote["EUR"].Price;

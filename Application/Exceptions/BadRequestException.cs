@@ -3,7 +3,7 @@
 public class BadRequestException : ApiException
 {
     public BadRequestException(string message)
-        : base(message, 400, "BAD_REQUEST")
+        : base(message, 400, "Bad Request")
     {
     }
 }

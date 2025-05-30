@@ -53,6 +53,12 @@ builder.Host.UseSerilog();
 builder.Services.Configure<ExternalApiSettings>(
     builder.Configuration.GetSection("ExternalApis"));
 
+// Configure caching
+builder.Services.AddMemoryCache();
+builder.Services.Configure<CacheSettings>(
+    builder.Configuration.GetSection("Caching"));
+builder.Services.AddScoped<ICacheService, CacheService>();
+
 // Configure services
 builder.Services.AddHttpClient<CoinMarketCapService>();
 builder.Services.AddHttpClient<ExchangeRatesService>();

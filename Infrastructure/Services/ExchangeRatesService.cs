@@ -10,16 +10,13 @@ public class ExchangeRatesService
 {
     private readonly HttpClient _httpClient;
     private readonly ExchangeRatesSettings _settings;
-    private readonly ILogger<ExchangeRatesService> _logger;
 
     private static readonly string[] TargetCurrencies = { "USD", "EUR", "BRL", "GBP", "AUD" };
     public ExchangeRatesService(HttpClient httpClient,
-        IOptions<ExternalApiSettings> settings,
-        ILogger<ExchangeRatesService> logger)
+        IOptions<ExternalApiSettings> settings)
     {
         _httpClient = httpClient;
         _settings = settings.Value.ExchangeRates;
-        _logger = logger;
 
         _httpClient.BaseAddress = new Uri(_settings.BaseUrl);
     }
