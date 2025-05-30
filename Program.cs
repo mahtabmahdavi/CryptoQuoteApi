@@ -34,11 +34,14 @@ builder.Services.AddSwaggerGen(c =>
 // Configure CORS to allow all origins
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowLocalhostOnly", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy.WithOrigins(
+                "https://localhost:5001",
+                "http://localhost:5000")
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
     });
 });
 

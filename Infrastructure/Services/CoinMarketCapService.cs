@@ -27,7 +27,6 @@ public class CoinMarketCapService : ICoinMarketCapService
 
     public async Task<decimal> GetCryptoPriceInEurAsync(string symbol)
     {
-        
         var response = await _httpClient.GetAsync($"cryptocurrency/quotes/latest?symbol={symbol}&convert=EUR");
         if (!response.IsSuccessStatusCode)
         {
@@ -37,11 +36,18 @@ public class CoinMarketCapService : ICoinMarketCapService
         var content = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<CoinMarketCapResponse>(content);
 
-        if (result?.Data is null || !result.Data.ContainsKey(symbol.ToUpper()))
+        if (result?.Data is null || !result.Data.ContainsKey(symbol))
         {
-            throw new NotFoundException($"No data found for symbol: {symbol.ToUpper()}");
+            throw new NotFoundException($"No data found for {symbol}");
         }
 
-        return result.Data[symbol.ToUpper()].Quote["EUR"].Price;
+        var price = result.Data[symbol].Quote?["EUR"]?.Price;
+
+        if (price is null)
+        {
+            throw new NotFoundException($"Price not available for {symbol} in EUR.");
+        }
+
+        return price.Value;
     }
 }

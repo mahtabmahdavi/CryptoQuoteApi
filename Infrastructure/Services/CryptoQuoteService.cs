@@ -26,8 +26,15 @@ public class CryptoQuoteService : ICryptoQuoteService
 
     public async Task<CryptoQuoteResponse> GetCryptoQuoteAsync(CryptoQuoteRequest request)
     {
-        var rates = await GetExchangeRatesAsync();
-        var eurPrice = await GetCryptoPriceAsync(request.Symbol);
+        var symbolCurrency = request.Symbol;
+
+        var priceTask = GetCryptoPriceAsync(symbolCurrency);
+        var ratesTask = GetExchangeRatesAsync();
+
+        await Task.WhenAll(priceTask, ratesTask);
+
+        var eurPrice = priceTask.Result;
+        var rates = ratesTask.Result;
 
         var convertedRates = rates.ToDictionary(
             r => r.Key,
@@ -39,6 +46,25 @@ public class CryptoQuoteService : ICryptoQuoteService
             Quotes = convertedRates,
             LastUpdated = DateTime.UtcNow
         };
+    }
+
+    private async Task<decimal> GetCryptoPriceAsync(string symbol)
+    {
+        var cacheKey = string.Format(CRYPTO_PRICE_CACHE_KEY, symbol);
+
+        var cachedPrice = _cacheService.Get<decimal>(cacheKey);
+        if (cachedPrice != default)
+        {
+            _logger.LogInformation("Retrieved {Symbol} price from cache", symbol);
+            return cachedPrice;
+        }
+
+        var price = await _coinService.GetCryptoPriceInEurAsync(symbol);
+
+        _cacheService.Set(cacheKey, price);
+        _logger.LogInformation("Stored {Symbol} price in cache", symbol);
+
+        return price;
     }
 
     private async Task<Dictionary<string, decimal>> GetExchangeRatesAsync()
@@ -56,24 +82,5 @@ public class CryptoQuoteService : ICryptoQuoteService
         _logger.LogInformation("Stored exchange rates in cache");
 
         return rates;
-    }
-
-    private async Task<decimal> GetCryptoPriceAsync(string symbol)
-    {
-        var cacheKey = string.Format(CRYPTO_PRICE_CACHE_KEY, symbol.ToUpper());
-
-        var cachedPrice = _cacheService.Get<decimal>(cacheKey);
-        if (cachedPrice != default)
-        {
-            _logger.LogInformation($"Retrieved {symbol.ToUpper()} price from cache");
-            return cachedPrice;
-        }
-
-        var price = await _coinService.GetCryptoPriceInEurAsync(symbol);
-
-        _cacheService.Set(cacheKey, price);
-        _logger.LogInformation($"Stored {symbol.ToUpper()} price in cache");
-
-        return price;
     }
 }

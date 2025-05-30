@@ -31,7 +31,6 @@ public class ErrorHandlingMiddleware
             if (context.Response.HasStarted)
             {
                 _logger.LogWarning("The response has already started, cannot write error response.");
-                throw;
             }
 
             await HandleExceptionAsync(context, ex);
