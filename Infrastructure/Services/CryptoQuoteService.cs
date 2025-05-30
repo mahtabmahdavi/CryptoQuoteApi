@@ -17,7 +17,7 @@ public class CryptoQuoteService : ICryptoQuoteService
         _logger = logger;
     }
 
-    public async Task<CryptoQuoteResponseDto?> GetCryptoQuoteAsync(string symbol)
+    public async Task<CryptoQuoteResponse?> GetCryptoQuoteAsync(string symbol)
     {
         try
         {
@@ -33,10 +33,10 @@ public class CryptoQuoteService : ICryptoQuoteService
                 r => r.Key,
                 r => priceInEur.Value * r.Value);
 
-            var response = new CryptoQuoteResponseDto
+            var response = new CryptoQuoteResponse
             {
                 Symbol = symbol.ToUpper(),
-                Rates = new Dictionary<string, decimal>
+                Quotes = new Dictionary<string, decimal>
                 {
                     { "EUR", priceInEur.Value },
                 }
@@ -44,7 +44,7 @@ public class CryptoQuoteService : ICryptoQuoteService
 
             foreach (var cr in convertedRates)
             {
-                response.Rates.TryAdd(cr.Key, cr.Value);
+                response.Quotes.TryAdd(cr.Key, cr.Value);
             }
 
             return response;
