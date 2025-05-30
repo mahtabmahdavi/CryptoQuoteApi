@@ -1,4 +1,5 @@
 ﻿using CryptoQuoteApi.Application.Exceptions;
+using CryptoQuoteApi.Application.Interfaces;
 using CryptoQuoteApi.Application.Settings;
 using CryptoQuoteApi.Infrastructure.Models.ExchangeRates;
 using Microsoft.Extensions.Options;
@@ -6,7 +7,7 @@ using System.Text.Json;
 
 namespace CryptoQuoteApi.Infrastructure.Services;
 
-public class ExchangeRatesService
+public class ExchangeRatesService : IExchangeRatesService
 {
     private readonly HttpClient _httpClient;
     private readonly ExchangeRatesSettings _settings;

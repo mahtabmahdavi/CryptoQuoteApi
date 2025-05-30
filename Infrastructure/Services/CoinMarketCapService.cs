@@ -1,4 +1,5 @@
 ﻿using CryptoQuoteApi.Application.Exceptions;
+using CryptoQuoteApi.Application.Interfaces;
 using CryptoQuoteApi.Application.Settings;
 using CryptoQuoteApi.Infrastructure.Models.CoinMarketCap;
 using Microsoft.Extensions.Options;
@@ -7,7 +8,7 @@ using System.Text.Json;
 
 namespace CryptoQuoteApi.Infrastructure.Services;
 
-public class CoinMarketCapService
+public class CoinMarketCapService : ICoinMarketCapService
 {
     private readonly HttpClient _httpClient;
     private readonly CoinMarketCapSettings _settings;

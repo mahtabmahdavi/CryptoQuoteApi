@@ -60,9 +60,11 @@ builder.Services.Configure<CacheSettings>(
     builder.Configuration.GetSection("Caching"));
 builder.Services.AddScoped<ICacheService, CacheService>();
 
-// Configure services
-builder.Services.AddHttpClient<CoinMarketCapService>();
-builder.Services.AddHttpClient<ExchangeRatesService>();
+// Configure HttpClients for external APIs
+builder.Services.AddHttpClient<ICoinMarketCapService, CoinMarketCapService>();
+builder.Services.AddHttpClient<IExchangeRatesService, ExchangeRatesService>();
+
+// Configure application services
 builder.Services.AddScoped<ICryptoQuoteService, CryptoQuoteService>();
 
 // Configure validation

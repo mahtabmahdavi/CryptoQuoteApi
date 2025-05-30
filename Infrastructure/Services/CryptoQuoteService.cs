@@ -5,16 +5,16 @@ namespace CryptoQuoteApi.Infrastructure.Services;
 
 public class CryptoQuoteService : ICryptoQuoteService
 {
-    private readonly CoinMarketCapService _coinService;
-    private readonly ExchangeRatesService _exchangeService;
+    private readonly ICoinMarketCapService _coinService;
+    private readonly IExchangeRatesService _exchangeService;
     private readonly ILogger<CryptoQuoteService> _logger;
     private readonly ICacheService _cacheService;
     private const string EXCHANGE_RATES_CACHE_KEY = "exchange_rates";
     private const string CRYPTO_PRICE_CACHE_KEY = "crypto_price_{0}";
 
     public CryptoQuoteService(
-        CoinMarketCapService coinService,
-        ExchangeRatesService exchangeService,
+        ICoinMarketCapService coinService,
+        IExchangeRatesService exchangeService,
         ILogger<CryptoQuoteService> logger,
         ICacheService cacheService)
     {
