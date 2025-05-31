@@ -47,4 +47,18 @@ public class CacheServiceTests
         // Assert
         Assert.AreEqual(expectedValue, result);
     }
+
+
+    [TestMethod]
+    public void Get_WhenKeyDoesNotExist_ReturnsDefault()
+    {
+        // Arrange
+        var key = "non_existent_key";
+
+        // Act
+        var result = _cacheService.Get<string>(key);
+
+        // Assert
+        Assert.IsNull(result);
+    }
 }
