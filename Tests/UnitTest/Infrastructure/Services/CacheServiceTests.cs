@@ -76,4 +76,20 @@ public class CacheServiceTests
         var result = _cacheService.Get<string>(key);
         Assert.AreEqual(value, result);
     }
+
+    [TestMethod]
+    public void Set_WithCustomExpiration_StoresValue()
+    {
+        // Arrange
+        var key = "test_key";
+        var value = "test_value";
+        var expiration = TimeSpan.FromMinutes(10);
+
+        // Act
+        _cacheService.Set(key, value, expiration);
+
+        // Assert
+        var result = _cacheService.Get<string>(key);
+        Assert.AreEqual(value, result);
+    }
 }
