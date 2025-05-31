@@ -26,7 +26,7 @@ public class CryptoQuoteService : ICryptoQuoteService
 
     public async Task<CryptoQuoteResponse> GetCryptoQuoteAsync(CryptoQuoteRequest request)
     {
-        var symbolCurrency = request.Symbol;
+        var symbolCurrency = request.Symbol.ToUpper();
 
         var priceTask = GetCryptoPriceAsync(symbolCurrency);
         var ratesTask = GetExchangeRatesAsync();
