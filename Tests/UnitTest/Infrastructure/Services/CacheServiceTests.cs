@@ -61,4 +61,19 @@ public class CacheServiceTests
         // Assert
         Assert.IsNull(result);
     }
+
+    [TestMethod]
+    public void Set_WithDefaultExpiration_StoresValue()
+    {
+        // Arrange
+        var key = "test_key";
+        var value = "test_value";
+
+        // Act
+        _cacheService.Set(key, value);
+
+        // Assert
+        var result = _cacheService.Get<string>(key);
+        Assert.AreEqual(value, result);
+    }
 }
