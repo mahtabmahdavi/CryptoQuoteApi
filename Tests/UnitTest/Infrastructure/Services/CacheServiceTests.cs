@@ -107,4 +107,21 @@ public class CacheServiceTests
         // Assert
         Assert.IsNull(result);
     }
+
+    [TestMethod]
+    public void Set_WithComplexObject_StoresAndRetrievesCorrectly()
+    {
+        // Arrange
+        var key = "test_key";
+        var value = new TestObject { Id = 1, Name = "Test" };
+
+        // Act
+        _cacheService.Set(key, value);
+        var result = _cacheService.Get<TestObject>(key);
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual(value.Id, result.Id);
+        Assert.AreEqual(value.Name, result.Name);
+    }
 }
