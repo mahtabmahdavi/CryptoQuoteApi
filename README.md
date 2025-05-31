@@ -119,23 +119,31 @@ This technical assessment is particularly valuable because it simulates a real-w
 
 ```json
 {
-  "name": "Mahtab Mahdavi",
+  "firstName": "Mahtab",
+  "lastName": "Mahdavi",
   "age": 28,
   "education": {
-    "degree": "Computer Engineering",
-    "field": "Software Engineering"
+    "degree": "Bachelor of Science",
+    "field": "Computer Engineering"
   },
-  "technicalSkills": {
-    "languages": ["C#"],
-    "frameworks": ["ASP.NET Core"],
-    "databases": ["Entity Framework"],
-    "architecture": ["Clean Architecture", "Microservices"]
+  "skills": {
+    "languages": ["C#", "Java", "Python"]
+    "frameworks": ["ASP.NET Core", "Entity Framework", "SpringBoot", "Hibernate"],
   },
-  "interests": [
-    "API Development",
-    "Software Architecture",
-    "Clean Code",
-    "Best Practices"
+  "softSkills": [
+    "Knowledge sharing",
+    "Collaboration",
+    "Passionate about problem solving",
+    "Team work"
+  ],
+  "expriences": [{
+    "organizationName": "OTC Global GmbH",
+    "jobPosition": "Backend Developer"
+  }],
+  "Hobbies": [
+    "Watch movie and series",
+    "Hang out with friends",
+    "Go to the cafe"
   ]
 }
 ```
