@@ -92,4 +92,19 @@ public class CacheServiceTests
         var result = _cacheService.Get<string>(key);
         Assert.AreEqual(value, result);
     }
+
+    [TestMethod]
+    public void Set_WithNullValue_StoresNull()
+    {
+        // Arrange
+        var key = "test_key";
+        string value = null;
+
+        // Act
+        _cacheService.Set(key, value);
+        var result = _cacheService.Get<string>(key);
+
+        // Assert
+        Assert.IsNull(result);
+    }
 }
