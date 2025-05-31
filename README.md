@@ -119,7 +119,7 @@ This technical assessment is particularly valuable because it simulates a real-w
 
 ```json
 {
-  "name": "Mehtab Mahdavi",
+  "name": "Mahtab Mahdavi",
   "age": 28,
   "education": {
     "degree": "Computer Engineering",
